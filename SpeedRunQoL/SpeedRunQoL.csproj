@@ -35,13 +35,13 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <Reference Include="DebugMod, Version=1.4.9.1, Culture=neutral, PublicKeyToken=null">
+          <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Hollow Knight\hollow_knight_Data\Managed\Mods\DebugMod\DebugMod.dll</HintPath>
+        </Reference>
         <Reference Include="System" />
         <Reference Include="System.Core" />
         <Reference Include="System.Xml" />
         <!-- Make sure DebugMod is refrenced. its possible to do it without referencing but i find that more annoying and dont have a good reason to not reference -->
-        <Reference Include="DebugMod, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
-            <HintPath>$(HollowKnightFolder)\Mods\DebugMod\DebugMod.dll</HintPath>
-        </Reference>
         <Reference Include="Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
             <HintPath>$(HollowKnightFolder)\Assembly-CSharp.dll</HintPath>
         </Reference>
@@ -54,6 +54,9 @@
         <Reference Include="UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
             <HintPath>$(HollowKnightFolder)\UnityEngine.CoreModule.dll</HintPath>
         </Reference>
+        <Reference Include="UnityEngine.Physics2DModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
+          <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Hollow Knight\hollow_knight_Data\Managed\UnityEngine.Physics2DModule.dll</HintPath>
+        </Reference>
         <Reference Include="UnityEngine.UI, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
             <HintPath>$(HollowKnightFolder)\UnityEngine.UI.dll</HintPath>
         </Reference>
@@ -64,6 +67,7 @@
     </ItemGroup>
     <ItemGroup>
         <Compile Include="KeyBinds.cs" />
+        <Compile Include="PositionSaveState.cs" />
         <Compile Include="SpeedRunQoL.cs" />
         <Compile Include="Properties\AssemblyInfo.cs" />
     </ItemGroup>

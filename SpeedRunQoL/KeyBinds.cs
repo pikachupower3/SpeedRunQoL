@@ -16,7 +16,6 @@ namespace SpeedRunQoL
         
         private static bool fsmToggle = false;
         
-        
         //each keybind that has to be loaded needs to be annotated with BindableMethod and be public static void
         [BindableMethod(name = "Reload Radiance Fight", category = "Speedrun Extentions")]
         public static void LoadRadiance()
@@ -108,5 +107,15 @@ namespace SpeedRunQoL
             yield break;
         }
         
+        [BindableMethod(name = "Position Save", category = "Speedrun Extentions")]
+        public static void SavePosition()
+        {
+            PositionSaveState.SavePosition();
+        }
+        [BindableMethod(name = "Position Load", category = "Speedrun Extentions")]
+        public static void LoadPosition()
+        {
+            PositionSaveState.LoadPosition();
+        }
     }
 }

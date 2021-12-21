@@ -5,16 +5,18 @@ using DebugMod;
 using Modding;
 using MonoMod;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace SpeedRunQoL
 {
     //debug doesnt do any of the dll loading so the mod needs to inherit from "Mod" so the modding api loads it
     public class SpeedRunQoL: Mod
     {
-        public override string GetVersion() => "v0.2";
-        
+        public override string GetVersion() => "v0.3";
+        internal static SpeedRunQoL instance { get; private set; }
         public override void Initialize()
         {
+            if (instance == null) instance = this;
             //checks whether debug is loaded. probably could also use
             //"ModHooks.GetMod("DebugMod") is Mod" or
             //"ModHooks.LoadedModsWithVersions.ContainsKey("DebugMod")
@@ -22,6 +24,14 @@ namespace SpeedRunQoL
             {
                 AddStuffToDebug();
             };
+
+            UnityEngine.SceneManagement.SceneManager.activeSceneChanged += YeetList;
+        }
+
+        private void YeetList(Scene arg0, Scene arg1)
+        {
+            PositionSaveState.FSMs.Clear();
+            PositionSaveState.FSMs2.Clear();
         }
 
         //making this a different function is the way that the mod doesnt fail to load when debug isnt downloaded.
