@@ -30,8 +30,7 @@ namespace SpeedRunQoL
 
         private void YeetList(Scene arg0, Scene arg1)
         {
-            PositionSaveState.FSMs.Clear();
-            PositionSaveState.FSMs2.Clear();
+            PositionSaveState.AllEnemiesList.Clear();
         }
 
         //making this a different function is the way that the mod doesnt fail to load when debug isnt downloaded.

@@ -5,20 +5,22 @@ using UnityEngine;
 using System.Reflection;
 using static DebugMod.EnemiesPanel;
 using System;
+using System.Collections;
 using DebugMod;
 using Console = DebugMod.Console;
+using Object = UnityEngine.Object;
 
 namespace SpeedRunQoL
 {
     public class PositionSaveState
     {
 
-        public static List<EnemyData> FSMs = new List<EnemyData>();
-        public static List<EnemyData> FSMs2 = new List<EnemyData>();
+        public static List<EnemyData> AllEnemiesList = new List<EnemyData>(); 
+        private static List<EnemyData> LoadEnemiesList = new List<EnemyData>();
 
-        public static Vector3 KnightPos;
-        public static Vector3 CamPos;
-        public static Vector2 KnightVel;
+        private static Vector3 KnightPos;
+        private static Vector3 CamPos;
+        private static Vector2 KnightVel;
 
         public static void SavePosition()
         {
@@ -26,72 +28,64 @@ namespace SpeedRunQoL
             KnightVel = HeroController.instance.current_velocity;
             CamPos = GameManager.instance.cameraCtrl.gameObject.transform.position;
             
-            FSMs = GetAllEnemies(FSMs2);
-            FSMs.ForEach(delegate(EnemyData dat) { dat.gameObject.SetActive(false); });
-            LoadPosition();
-
+            AllEnemiesList = CreateAllEnemiesList();
+            AllEnemiesList.ForEach(delegate(EnemyData ed) {ed.gameObject.SetActive(false);});
         }
+        
 
         public static void LoadPosition()
         {
-            try
+            //check for list is empty (ie no saved state) so dont load state
+            if (!AllEnemiesList.Any())
             {
-                if (FSMs.Count == 0)
-                {
-                    Console.AddLine("Cannot load save state because no state is saved");
-                    return;
-                }
-                RemoveAll();
-                FSMs2 = Create();
-                // Move knight to saved location, change velocity to saved velocity, Move Camera to saved campos, 
-                
-                HeroController.instance.gameObject.transform.position = KnightPos;
-                HeroController.instance.current_velocity = KnightVel;
-                GameManager.instance.cameraCtrl.gameObject.transform.position = CamPos;
+                Console.AddLine("Cannot load save state because no state is saved");
+                return;
             }
-            catch (Exception e)
-            {
-                SpeedRunQoL.instance.Log(e.Message);
-                SpeedRunQoL.instance.Log(e.StackTrace);
-            }
+
+            DestroyOldEnemies();
+            LoadEnemiesList = LoadEnemies();
+            // Move knight to saved location, change velocity to saved velocity, Move Camera to saved campos, 
+
+            HeroController.instance.gameObject.transform.position = KnightPos;
+            HeroController.instance.current_velocity = KnightVel;
+            GameManager.instance.cameraCtrl.gameObject.transform.position = CamPos;
+
         }
 
-        public static List<EnemyData> Create()
+        public static List<EnemyData> LoadEnemies()
         {
             List<EnemyData> data = new List<EnemyData>();
             
-            for (int i = 0; i < FSMs.Count; i++)
+            foreach (EnemyData tempEd in AllEnemiesList.Where(ed => ed.gameObject != null))
             {
-                Console.AddLine(i.ToString());
-                EnemyData dattemp = FSMs.FindAll(ed => ed.gameObject != null)[i];
-
-                GameObject gameObject2 = UnityEngine.Object.Instantiate(dattemp.gameObject,
-                    dattemp.gameObject.transform.position, dattemp.gameObject.transform.rotation) as GameObject;
+                GameObject gameObject2 = Object.Instantiate(tempEd.gameObject, tempEd.gameObject.transform.position, tempEd.gameObject.transform.rotation);
+                
                 Component component = gameObject2.GetComponent<tk2dSprite>();
-
                 HealthManager hm = gameObject2.GetComponent<HealthManager>();
+                
                 int value8 = hm.hp;
                 gameObject2.SetActive(true);
+                
                 data.Add(new EnemyData(value8, hm, component, DebugMod.EnemiesPanel.parent, gameObject2));
             }
-
-            ;
             return data;
         }
 
-        public static void RemoveAll()
+        public static void DestroyOldEnemies()
         {
             //get all created
-            FSMs2.ForEach(delegate(EnemyData dat)
+            LoadEnemiesList.ForEach(delegate(EnemyData dat)
             {
-                if (!FSMs.Any(ed => ed.gameObject == dat.gameObject))
-                    GameObject.Destroy(dat.gameObject.gameObject.gameObject.gameObject);
+                if (AllEnemiesList.All(ed => ed.gameObject != dat.gameObject))
+                {
+                    Object.Destroy(dat.gameObject.gameObject.gameObject.gameObject);
+                }
 
             });
 
         }
 
-        public static List<EnemyData> GetAllEnemies(List<EnemyData> Exclude)
+        public static List<EnemyData> CreateAllEnemiesList()
         {
             float boxSize = 250f;
             List<EnemyData> ret = new List<EnemyData>();
@@ -105,9 +99,7 @@ namespace SpeedRunQoL
                     {
                         HealthManager hm = array[i].GetComponent<HealthManager>();
 
-                        if (hm && array[i].gameObject.activeSelf &&
-                            //!(Exclude.Any(ed => ed.gameObject == array[i].gameObject)) &&
-                            !Ignore(array[i].gameObject.name))
+                        if (hm && array[i].gameObject.activeSelf && !Ignore(array[i].gameObject.name))
                         {
                             Component component = array[i].gameObject.GetComponent<tk2dSprite>();
                             if (component == null)
