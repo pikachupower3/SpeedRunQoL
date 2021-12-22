@@ -7,20 +7,31 @@ using static DebugMod.EnemiesPanel;
 using System;
 using System.Collections;
 using DebugMod;
+using UnityEngine.SceneManagement;
 using Console = DebugMod.Console;
 using Object = UnityEngine.Object;
 
-namespace SpeedRunQoL
+namespace SpeedRunQoL.Functionality
 {
-    public class PositionSaveState
+    public static class PositionSaveState
     {
-
         public static List<EnemyData> AllEnemiesList = new List<EnemyData>(); 
         private static List<EnemyData> LoadEnemiesList = new List<EnemyData>();
 
         private static Vector3 KnightPos;
         private static Vector3 CamPos;
         private static Vector2 KnightVel;
+        
+        static PositionSaveState()
+        {
+            UnityEngine.SceneManagement.SceneManager.activeSceneChanged += DeleteSaveState;
+        }
+        
+        private static void DeleteSaveState(Scene arg0, Scene arg1)
+        {
+            //if list is empty, the check in LoadPosition will stop loading state
+            AllEnemiesList.Clear();
+        }
 
         public static void SavePosition()
         {
@@ -92,28 +103,23 @@ namespace SpeedRunQoL
             if (HeroController.instance != null && !HeroController.instance.cState.transitioning && GameManager.instance.IsGameplayScene())
             {
                 int layerMask = 133120;
-                Collider2D[] array = Physics2D.OverlapBoxAll(HeroController.instance.transform.position, new Vector2(boxSize, boxSize), 1f, layerMask);
-                if (array != null)
+                foreach (Collider2D enemy in Physics2D.OverlapBoxAll(HeroController.instance.transform.position, new Vector2(boxSize, boxSize), 1f, layerMask))
                 {
-                    for (int i = 0; i < array.Length; i++)
-                    {
-                        HealthManager hm = array[i].GetComponent<HealthManager>();
+                        HealthManager hm = enemy.GetComponent<HealthManager>();
 
-                        if (hm && array[i].gameObject.activeSelf && !Ignore(array[i].gameObject.name))
+                        if (hm && enemy.gameObject.activeSelf && !DebugMod.EnemiesPanel.Ignore(enemy.gameObject.name))
                         {
-                            Component component = array[i].gameObject.GetComponent<tk2dSprite>();
+                            Component component = enemy.gameObject.GetComponent<tk2dSprite>();
                             if (component == null)
                             {
                                 component = null;
                             }
 
                             int value = hm.hp;
-                            ret.Add(new EnemyData(value, hm, component, DebugMod.EnemiesPanel.parent, array[i].gameObject));
+                            ret.Add(new EnemyData(value, hm, component, DebugMod.EnemiesPanel.parent, enemy.gameObject));
                         }
-                    }
                 }
             }
-
             return ret;
         }
     }

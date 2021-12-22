@@ -24,13 +24,6 @@ namespace SpeedRunQoL
             {
                 AddStuffToDebug();
             };
-
-            UnityEngine.SceneManagement.SceneManager.activeSceneChanged += YeetList;
-        }
-
-        private void YeetList(Scene arg0, Scene arg1)
-        {
-            PositionSaveState.AllEnemiesList.Clear();
         }
 
         //making this a different function is the way that the mod doesnt fail to load when debug isnt downloaded.

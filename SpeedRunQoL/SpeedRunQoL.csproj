@@ -66,8 +66,9 @@
 
     </ItemGroup>
     <ItemGroup>
+        <Compile Include="Functionality\ForceUumuuExtraAttack.cs" />
+        <Compile Include="Functionality\PositionSaveState.cs" />
         <Compile Include="KeyBinds.cs" />
-        <Compile Include="PositionSaveState.cs" />
         <Compile Include="SpeedRunQoL.cs" />
         <Compile Include="Properties\AssemblyInfo.cs" />
     </ItemGroup>
