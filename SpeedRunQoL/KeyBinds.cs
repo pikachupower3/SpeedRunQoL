@@ -1,13 +1,17 @@
 ﻿using System;
 using System.Collections;
 using System.Linq;
+using System.Reflection;
 using DebugMod;
+using DebugMod.Hitbox;
 using HutongGames.PlayMaker;
 using HutongGames.PlayMaker.Actions;
+using Modding;
 using SpeedRunQoL.Functionality;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using Console = DebugMod.Console;
+using USceneManager = UnityEngine.SceneManagement.SceneManager;
 
 namespace SpeedRunQoL
 {
@@ -71,6 +75,98 @@ namespace SpeedRunQoL
         public static void LoadPosition()
         {
             PositionSaveState.LoadPosition();
+        }
+        
+        [BindableMethod(name = "Quickslot (load duped)", category = "Savestates")]
+        public static void LoadStateDuped()
+        {
+            LoadState(new object[] { 0, true }); //SaveStateType.MEMORY
+        }
+
+        [BindableMethod(name = "Load duped state from file", category = "Savestates")]
+        public static void LoadFromFileDuped()
+        {
+            LoadState(new object[] { 2, true }); //SaveStateType.SKIPONE
+        }
+
+        private static void LoadState(object[] args)
+        {
+            var debugModType = typeof(DebugMod.DebugMod);
+            var instance = debugModType.GetField("instance", BindingFlags.Static | BindingFlags.NonPublic)
+                ?.GetValue(null);
+            if (instance == null)
+            {
+                Console.AddLine("Error while loading savestate: no DebugMod instance");
+                return;
+            }
+            
+            var saveStateManager =
+                debugModType.GetField("saveStateManager", BindingFlags.Static | BindingFlags.NonPublic)
+                    ?.GetValue(instance);
+            if (saveStateManager == null)
+            {
+                Console.AddLine("Error while loading savestate: no SaveStateManager");
+                return;
+            }
+            
+            saveStateManager.GetType().GetMethod("LoadState", BindingFlags.Instance | BindingFlags.Public)
+                ?.Invoke(saveStateManager, args);
+        }
+
+        [BindableMethod(name = "Toggle Bench Storage", category = "Glitches")]
+        public static void ToggleBenchStorage()
+        {
+            PlayerData.instance.atBench = !PlayerData.instance.atBench;
+            Console.AddLine($"{(PlayerData.instance.atBench ? "Given" : "Taken away")} bench storage");
+        }
+
+        [BindableMethod(name = "Toggle Collision", category = "Glitches")]
+        public static void ToggleCollision()
+        {
+            var rb2d = HeroController.instance.GetComponent<Rigidbody2D>();
+            rb2d.isKinematic = !rb2d.isKinematic;
+            Console.AddLine($"{(rb2d.isKinematic ? "Disabled" : "Enabled")} collision");
+        }
+
+        [BindableMethod(name = "Dreamgate Invulnerability", category = "Glitches")]
+        public static void GiveDgateInvuln()
+        {
+            PlayerData.instance.isInvincible = true;
+            UnityEngine.Object.FindObjectOfType<HeroBox>().gameObject.SetActive(false);
+            HeroController.instance.gameObject.LocateMyFSM("Roar Lock").FsmVariables.FindFsmBool("No Roar").Value =
+                true;
+            Console.AddLine("Given dreamgate invulnerability");
+        }
+        
+        [BindableMethod(name = "Reset Quick Map Storage", category = "Glitches")]
+        public static void ResetQMStorage()
+        {
+            var mapFSM = HeroController.instance.gameObject.LocateMyFSM("Map Control");
+            mapFSM.FsmVariables.FindFsmGameObject("Inventory").Value = null;
+            Console.AddLine("Reset quick map storage");
+        }
+        
+        [BindableMethod(name = "Dupe Active Room", category = "Glitches")]
+        public static void DupeActiveRoom()
+        {
+            GameManager.instance.StartCoroutine(LoadRoom(USceneManager.GetActiveScene().name));
+        }
+
+        private static IEnumerator LoadRoom(string sceneName)
+        {
+            var loadop = USceneManager.LoadSceneAsync(sceneName, LoadSceneMode.Additive);
+            loadop.allowSceneActivation = true;
+            yield return loadop;
+            GameManager.instance.RefreshTilemapInfo(sceneName);
+
+            var settings = DebugMod.DebugMod.settings;
+            if (settings.ShowHitBoxes > 0)
+            {
+                int cs = settings.ShowHitBoxes;
+                settings.ShowHitBoxes = 0;
+                yield return new WaitUntil(() => HitboxViewer.State == 0);
+                settings.ShowHitBoxes = cs;
+            }
         }
     }
 }
