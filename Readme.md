@@ -9,3 +9,12 @@ Note: key can be pressed anywhere (even in same room) and this reload makes sure
 Makes Uumuu do an extra attack for practice. you'll need to press the keybind again after uumuu has done the extra attack to make it do another
 ### Position SaveStates
 Originally Written by magnetic pizza, it allows to very quickly reload a room for practice. It does not save progress nor does it work after going to another room and coming back
+### Glitched Binds
+Written by [pseudorandomhk](https://github.com/pseudorandomhk), adds binds for:
+- Quickslot (load duped)
+- Load duped state from file
+- Toggle Bench Storage
+- Toggle Collision
+- Dreamgate Invulnerability
+- Reset Quick Map Storage
+- Dupe Active Room

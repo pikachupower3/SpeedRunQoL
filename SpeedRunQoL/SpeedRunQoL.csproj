@@ -35,7 +35,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <Reference Include="DebugMod, Version=1.4.9.3, Culture=neutral, PublicKeyToken=null">
+        <Reference Include="DebugMod, Version=1.4.9.4, Culture=neutral, PublicKeyToken=null">
           <HintPath>$(HollowKnightFolder)\Mods\DebugMod\DebugMod.dll</HintPath>
         </Reference>
         <Reference Include="System" />
