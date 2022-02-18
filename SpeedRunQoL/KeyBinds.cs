@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.ComponentModel.Design;
 using System.Linq;
 using System.Reflection;
 using DebugMod;
@@ -167,6 +168,20 @@ namespace SpeedRunQoL
                 yield return new WaitUntil(() => HitboxViewer.State == 0);
                 settings.ShowHitBoxes = cs;
             }
+        }
+
+
+        [BindableMethod(name = "Change Visual State Viewer", category = "Speedrun Extentions")]
+        public static void ChangeStateViewer()
+        {
+            VisualStateViewer.IncrementCurrentViewingState();
+            Console.AddLine($"State changed to {VisualStateViewer.CurrentViewingState.ToString()}");
+        }
+
+        [BindableMethod(name = "Log Current Visual State Viewer", category = "Speedrun Extentions")]
+        public static void LogStateViewer()
+        {
+            Console.AddLine($"Current State is {VisualStateViewer.CurrentViewingState.ToString()}");
         }
     }
 }

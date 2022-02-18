@@ -24,6 +24,8 @@ namespace SpeedRunQoL
             {
                 AddStuffToDebug();
             };
+
+            ModHooks.HeroUpdateHook += Functionality.VisualStateViewer.CheckForFlashConditions;
         }
 
         //making this a different function is the way that the mod doesnt fail to load when debug isnt downloaded.
