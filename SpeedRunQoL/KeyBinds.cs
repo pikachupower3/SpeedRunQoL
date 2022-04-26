@@ -1,8 +1,13 @@
-﻿using System;
+using System;
 using System.Collections;
-using System.ComponentModel.Design;
 using System.Linq;
+using System.ComponentModel.Design;
 using System.Reflection;
+using System.Runtime.InteropServices;
+using System.Collections.Generic;
+using System.IO;
+using System.Text;
+using System.Xml;
 using DebugMod;
 using DebugMod.Hitbox;
 using HutongGames.PlayMaker;
@@ -183,5 +188,203 @@ namespace SpeedRunQoL
         {
             Console.AddLine($"Current State is {VisualStateViewer.CurrentViewingState.ToString()}");
         }
+        
+        [BindableMethod(name = "Toggle Godseeker Option", category = "Main Menu Settings")]
+        public static void ToggleGodseekerFileSelect()
+        {
+            //Even with cleaner code I don't want to mess up cross platform stuff
+            if (! RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                Console.AddLine("This feature is only available on Windows");
+                return;
+            }
+
+            if (Platform.Current)
+            {
+                if (GameManager.instance.GetStatusRecordInt("RecBossRushMode") == 1)
+                {
+                    GameManager.instance.SetStatusRecordInt("RecBossRushMode", 0); ;
+                    Console.AddLine("Disabled Godseeker");
+                }
+
+                else
+                {
+                    GameManager.instance.SetStatusRecordInt("RecBossRushMode", 1);
+                    Console.AddLine("Added Godseeker");
+                }
+
+                GameManager.instance.SaveStatusRecords();
+            }
+
+            else
+            {
+                Console.AddLine("Error, platform out of date");
+            }
+        }
+
+        [BindableMethod(name = "Toggle Steel Soul Option", category = "Main Menu Settings")]
+        public static void ToggleSteelSoulSelect()
+        {
+            if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                Console.AddLine("This feature is only available on Windows");
+                return;
+            }
+
+            if (Platform.Current)
+            {
+                if (GameManager.instance.GetStatusRecordInt("RecPermadeathMode") == 1)
+                {
+                    GameManager.instance.SetStatusRecordInt("RecPermadeathMode", 0);
+                    Console.AddLine("Disabled Steel Soul");
+                }
+
+                else
+                {
+                    GameManager.instance.SetStatusRecordInt("RecPermadeathMode", 1);
+                    Console.AddLine("Enabled Steel Soul");
+                }
+
+                GameManager.instance.SaveStatusRecords();
+            }
+        }
+        //Colo 1
+        [BindableMethod(name = "(0) Reset Bronze Waves", category = "Colosseum 1")]
+        public static void Colo1Preset0()
+        {
+            ColoBronzeWaveChanger.SetWavePreset(0);
+        }
+
+        [BindableMethod(name = "(1) Aspids", category = "Colosseum 1")]
+        public static void Colo1Preset1()
+        {
+            ColoBronzeWaveChanger.SetWavePreset(1);
+        }
+
+        [BindableMethod(name = "(2) Baldurs 2", category = "Colosseum 1")]
+        public static void Colo1Preset2()
+        {
+            ColoBronzeWaveChanger.SetWavePreset(2);
+        }
+
+        [BindableMethod(name = "(3) Gruzzers", category = "Colosseum 1")]
+        public static void Colo1Preset3()
+        {
+            ColoBronzeWaveChanger.SetWavePreset(3);
+        }
+
+        [BindableMethod(name = "(4) Zote", category = "Colosseum 1")]
+        public static void Colo1Preset4()
+        {
+            ColoBronzeWaveChanger.SetWavePreset(4);
+        }
+
+        //Colo 2
+        [BindableMethod(name = "(0) Reset Silver Waves", category = "Colosseum 2")]
+        public static void Colo2Preset0()
+        {
+            ColoSilverWaveChanger.SetWavePreset(0);
+        }
+
+        [BindableMethod(name = "(1) Hoppers", category = "Colosseum 2")]
+        public static void Colo2Preset1()
+        {
+            ColoSilverWaveChanger.SetWavePreset(1);
+        }
+
+        [BindableMethod(name = "(2) Grub Mimic", category = "Colosseum 2")]
+        public static void Colo2Preset2()
+        {
+            ColoSilverWaveChanger.SetWavePreset(2);
+        }
+
+        [BindableMethod(name = "(3) Obbles", category = "Colosseum 2")]
+        public static void Colo2Preset3()
+        {
+            ColoSilverWaveChanger.SetWavePreset(3);
+        }
+
+        [BindableMethod(name = "(4) Oblobbles", category = "Colosseum 2")]
+        public static void Colo2Preset4()
+        {
+            ColoSilverWaveChanger.SetWavePreset(4);
+        }
+
+        //Colo 3 Wave Presets, see ColoGoldWavechanger.cs
+
+        [BindableMethod(name = "(0) Reset Gold Waves", category = "Colosseum 3")]
+        public static void Colo3Preset0()
+        {
+            ColoGoldWaveChanger.SetWavePreset(0);
+        }
+
+        [BindableMethod(name = "(1) Frogs", category = "Colosseum 3")]
+        public static void Colo3Preset1()
+        {
+            ColoGoldWaveChanger.SetWavePreset(1);
+        }
+
+        [BindableMethod(name = "(2) Sanctum Waves", category = "Colosseum 3")]
+        public static void Colo3Preset2()
+        {
+            ColoGoldWaveChanger.SetWavePreset(2);
+        }
+
+        [BindableMethod(name = "(3) Mawlurks", category = "Colosseum 3")]
+        public static void Colo3Preset3()
+        {
+            ColoGoldWaveChanger.SetWavePreset(3);
+        }
+
+        [BindableMethod(name = "(4) Floorless", category = "Colosseum 3")]
+        public static void Colo3Preset4()
+        {
+            ColoGoldWaveChanger.SetWavePreset(4);
+        }
+
+        [BindableMethod(name = "(5) Final Waves", category = "Colosseum 3")]
+        public static void Colo3Preset5()
+        {
+            ColoGoldWaveChanger.SetWavePreset(5);
+        }
+
+        [BindableMethod(name = "(6) GodTamer", category = "Colosseum 3")]
+        public static void Colo3Preset6()
+        {
+            ColoGoldWaveChanger.SetWavePreset(6);
+        }
+
+
+
+        //Following functionality not supported yet because save quitting will cause the game to be unrunnable, not to mentions its just useless
+        //In order for this to work, it needs to be called in the Main Menu, this gets overwritten immediately on SQ
+        /*
+        [BindableMethod(name = "Toggle First File Options", category = "Main Menu Settings")]
+        public static void ToggleFirstFileSelect()
+        {
+            if (Platform.Current && Platform.Current.SharedData.HasKey("VidOSSet") && Platform.Current.SharedData.HasKey("VidBrightSet"))
+            {
+                Platform.Current.SharedData.DeleteKey("VIDOSSet");
+                Platform.Current.SharedData.DeleteKey("VidBrightSet");
+                Platform.Current.SharedData.Save();
+                Console.AddLine("Added First File Options");
+            }
+            else if (Platform.Current.SharedData.HasKey("VidOSSet") || Platform.Current.SharedData.HasKey("VidBrightSet"))
+            {
+                Console.AddLine("Incongruent Registry Values! No actions taken");
+                return;
+            }
+
+            else
+
+            {
+                Platform.Current.SharedData.SetInt("VidOSSet", 1);
+                Platform.Current.SharedData.SetInt("VidBrightSet", 1);
+                Platform.Current.SharedData.Save();
+                Console.AddLine("Removed First File Options");
+            }
+        }
+        */
+
     }
 }
