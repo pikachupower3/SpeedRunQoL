@@ -1,22 +1,12 @@
-using System;
 using System.Collections;
 using System.Linq;
-using System.ComponentModel.Design;
 using System.Reflection;
 using System.Runtime.InteropServices;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
-using System.Xml;
 using DebugMod;
 using DebugMod.Hitbox;
-using HutongGames.PlayMaker;
-using HutongGames.PlayMaker.Actions;
-using Modding;
 using SpeedRunQoL.Functionality;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using Console = DebugMod.Console;
 using USceneManager = UnityEngine.SceneManagement.SceneManager;
 
 namespace SpeedRunQoL
@@ -31,13 +21,13 @@ namespace SpeedRunQoL
             GameManager.instance.StartCoroutine(LoadRadianceRoom());
             
             //making sure debugmod console is logged when something happens is good
-            DebugMod.Console.AddLine("Radiance Loaded");
+            Console.AddLine("Radiance Loaded");
         }
         [BindableMethod(name = "Press Accept Challenge", category = "Speedrun Extentions")]
         public static void ChallengeRadiance()
         {
             GameObject.Find("Challenge Prompt Radiant").LocateMyFSM("Challenge Start").SetState("Take Control");
-            DebugMod.Console.AddLine("Radiance Challenged (asuming it exists))");
+            Console.AddLine("Radiance Challenged (asuming it exists))");
         }
         
         //since this function is private static and isnt annotated with BindableMethod, it wont show up as keybind
@@ -125,7 +115,7 @@ namespace SpeedRunQoL
             PlayerData.instance.atBench = !PlayerData.instance.atBench;
             Console.AddLine($"{(PlayerData.instance.atBench ? "Given" : "Taken away")} bench storage");
         }
-
+        
         [BindableMethod(name = "Toggle Collision", category = "Glitches")]
         public static void ToggleCollision()
         {
@@ -134,14 +124,26 @@ namespace SpeedRunQoL
             Console.AddLine($"{(rb2d.isKinematic ? "Disabled" : "Enabled")} collision");
         }
 
-        [BindableMethod(name = "Dreamgate Invulnerability", category = "Glitches")]
-        public static void GiveDgateInvuln()
+        [BindableMethod(name = "Toggle Dreamgate Invulnerability", category = "Glitches")]
+        public static void ToggleDgateInvuln()
         {
-            PlayerData.instance.isInvincible = true;
-            UnityEngine.Object.FindObjectOfType<HeroBox>().gameObject.SetActive(false);
-            HeroController.instance.gameObject.LocateMyFSM("Roar Lock").FsmVariables.FindFsmBool("No Roar").Value =
-                true;
-            Console.AddLine("Given dreamgate invulnerability");
+            var herobox = HeroController.instance.gameObject.transform.Find("HeroBox").gameObject;
+            var noRoar = HeroController.instance.gameObject.LocateMyFSM("Roar Lock").FsmVariables
+                .FindFsmBool("No Roar");
+            if (PlayerData.instance.isInvincible && !herobox.activeSelf && noRoar.Value)
+            {
+                PlayerData.instance.isInvincible = false;
+                herobox.SetActive(true);
+                noRoar.Value = false;
+                Console.AddLine("Taken away dreamgate invulnerability");
+            }
+            else
+            {
+                PlayerData.instance.isInvincible = true;
+                herobox.SetActive(false);
+                noRoar.Value = true;
+                Console.AddLine("Given dreamgate invulnerability");
+            }
         }
         
         [BindableMethod(name = "Reset Quick Map Storage", category = "Glitches")]
@@ -172,6 +174,32 @@ namespace SpeedRunQoL
                 settings.ShowHitBoxes = 0;
                 yield return new WaitUntil(() => HitboxViewer.State == 0);
                 settings.ShowHitBoxes = cs;
+            }
+        }
+
+        [BindableMethod(name = "Toggle Load Screens", category = "Visual")]
+        public static void ToggleLoadScreens()
+        {
+            LoadScreenBlankerControl.hidingLoadScreens = !LoadScreenBlankerControl.hidingLoadScreens;
+            GameCameras.instance.hudCamera.transform.Find("2dtk Blanker").gameObject.LocateMyFSM("Blanker Control")
+                .enabled = !LoadScreenBlankerControl.hidingLoadScreens;
+            Console.AddLine($"{(LoadScreenBlankerControl.hidingLoadScreens ? "Hiding" : "Showing")} load screens");
+        }
+
+        private static bool hidingSceneBorders;
+
+        [BindableMethod(name = "Toggle Scene Borders", category = "Visual")]
+        public static void ToggleSceneBorders()
+        {
+            hidingSceneBorders = !hidingSceneBorders;
+            Console.AddLine($"{(hidingSceneBorders ? "Hiding" : "Showing")} scene borders");
+            // Clearing border list in ModHooks.DrawBlackBordersHook doesn't work because the borders still get instantiated
+            // Just disable the renderer instead
+            GameManager.instance.sm.borderPrefab.GetComponent<SpriteRenderer>().enabled = !hidingSceneBorders;
+            foreach (var borderRenderer in Object.FindObjectsOfType<SpriteRenderer>()
+                         .Where(sr => sr.gameObject.name == "SceneBorder(Clone)"))
+            {
+                borderRenderer.enabled = !hidingSceneBorders;
             }
         }
 
