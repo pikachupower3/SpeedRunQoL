@@ -8,7 +8,7 @@ namespace SpeedRunQoL
     //debug doesnt do any of the dll loading so the mod needs to inherit from "Mod" so the modding api loads it
     public class SpeedRunQoL: Mod
     {
-        public override string GetVersion() => "v0.56"; // shoutouts
+        public override string GetVersion() => "v0.60";
         internal static SpeedRunQoL instance { get; private set; }
         public override void Initialize()
         {
