@@ -102,7 +102,7 @@ namespace SpeedRunQoL.Functionality
 			PlayMakerFSM fsm = waveController.LocateMyFSM("Battle Control");
 			FsmState idle = fsm.FsmStates.First(t => t.Name == "Idle");
 			FsmState newWave = fsm.FsmStates.First(t => t.Name == WaveStateName);
-			idle.Transitions.First(tr => tr.EventName == "WAVES START").ToFsmState = newWave;
+			idle.Transitions.First(tr => tr.EventName == "WAVES START").ToState = newWave.Name;
 			yield break;
 
 		}

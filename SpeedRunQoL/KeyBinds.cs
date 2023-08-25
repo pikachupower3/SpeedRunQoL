@@ -220,12 +220,12 @@ namespace SpeedRunQoL
         [BindableMethod(name = "Toggle Godseeker Option", category = "Main Menu Settings")]
         public static void ToggleGodseekerFileSelect()
         {
-            //Even with cleaner code I don't want to mess up cross platform stuff
-            if (! RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-            {
-                Console.AddLine("This feature is only available on Windows");
-                return;
-            }
+            // //Even with cleaner code I don't want to mess up cross platform stuff
+            // if (! RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            // {
+            //     Console.AddLine("This feature is only available on Windows");
+            //     return;
+            // }
 
             if (Platform.Current)
             {
@@ -253,11 +253,11 @@ namespace SpeedRunQoL
         [BindableMethod(name = "Toggle Steel Soul Option", category = "Main Menu Settings")]
         public static void ToggleSteelSoulSelect()
         {
-            if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-            {
-                Console.AddLine("This feature is only available on Windows");
-                return;
-            }
+            // if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            // {
+            //     Console.AddLine("This feature is only available on Windows");
+            //     return;
+            // }
 
             if (Platform.Current)
             {
