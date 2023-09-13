@@ -62,15 +62,15 @@ namespace SpeedRunQoL.Functionality
             
             foreach (EnemyData tempEd in AllEnemiesList.Where(ed => ed.gameObject != null))
             {
-                GameObject gameObject2 = Object.Instantiate(tempEd.gameObject, tempEd.gameObject.transform.position, tempEd.gameObject.transform.rotation);
+                GameObject gameObject2 = (GameObject)GameObject.Instantiate(tempEd.gameObject, tempEd.gameObject.transform.position, tempEd.gameObject.transform.rotation);
                 
                 tk2dSprite sprite = gameObject2.GetComponent<tk2dSprite>();
-                HealthManager hm = gameObject2.GetComponent<HealthManager>();
+                PlayMakerFSM playMakerFSM = gameObject2.LocateMyFSM("health_manager_enemy");
                 
-                int value8 = hm.hp;
+                int value8 = playMakerFSM.FsmVariables.GetFsmInt("HP").Value;
                 gameObject2.SetActive(true);
                 
-                data.Add(new EnemyData(value8, hm, sprite, EnemiesPanel.parent, gameObject2));
+                data.Add(new EnemyData(value8, playMakerFSM, sprite, EnemiesPanel.parent, gameObject2));
             }
             return data;
         }
@@ -98,19 +98,19 @@ namespace SpeedRunQoL.Functionality
                 int layerMask = 133120;
                 foreach (Collider2D enemy in Physics2D.OverlapBoxAll(HeroController.instance.transform.position, new Vector2(boxSize, boxSize), 1f, layerMask))
                 {
-                        HealthManager hm = enemy.GetComponent<HealthManager>();
+                    PlayMakerFSM fsm = enemy.gameObject.LocateMyFSM("health_manager_enemy");
 
-                        if (hm && enemy.gameObject.activeSelf && !EnemiesPanel.Ignore(enemy.gameObject.name))
+                    if (fsm && enemy.gameObject.activeSelf && !EnemiesPanel.Ignore(enemy.gameObject.name))
+                    {
+                        tk2dSprite sprite = enemy.gameObject.GetComponent<tk2dSprite>();
+                        if (sprite == null)
                         {
-                            tk2dSprite sprite = enemy.gameObject.GetComponent<tk2dSprite>();
-                            if (sprite == null)
-                            {
-                                sprite = null;
-                            }
-
-                            int value = hm.hp;
-                            ret.Add(new EnemyData(value, hm, sprite, EnemiesPanel.parent, enemy.gameObject));
+                            sprite = null;
                         }
+
+                        int value = fsm.FsmVariables.GetFsmInt("HP").Value;
+                        ret.Add(new EnemyData(value, fsm, sprite, EnemiesPanel.parent, enemy.gameObject));
+                    }
                 }
             }
             return ret;

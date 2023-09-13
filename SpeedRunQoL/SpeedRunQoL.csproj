@@ -11,8 +11,8 @@
     <AssemblyName>SpeedRunQoL</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <LangVersion>latest</LangVersion>
-    <HollowKnightFolder>C:\Program Files (x86)\Steam\steamapps\common\Hollow Knight 1315 Debug\hollow_knight_Data\Managed\</HollowKnightFolder>
-    <ModsDirectory>C:\Program Files (x86)\Steam\steamapps\common\Hollow Knight 1315 Debug\hollow_knight_Data\Managed\Mods\DebugMod</ModsDirectory>
+    <HollowKnightFolder>C:\Hollow Knight Patches\hollow_knight_1028_modded\hollow_knight_Data\Managed\</HollowKnightFolder>
+    <ModsDirectory>C:\Hollow Knight Patches\hollow_knight_1028_modded\hollow_knight_Data\Managed\Mods\DebugMod</ModsDirectory>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">

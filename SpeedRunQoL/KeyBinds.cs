@@ -38,16 +38,15 @@ namespace SpeedRunQoL
             
             HeroController.instance.RelinquishControl();
             HeroController.instance.StopAnimationControl();
-            EventRegister.SendEvent("START DREAM ENTRY");
-            EventRegister.SendEvent("DREAM ENTER");
+            PlayMakerFSM.BroadcastEvent("START DREAM ENTRY");
+            PlayMakerFSM.BroadcastEvent("DREAM ENTER");
             HeroController.instance.enterWithoutInput = true; // stop early control on scene load
             
-            GameManager.instance.BeginSceneTransition(new GameManager.SceneLoadInfo
+            GameManager.instance.TransitionSceneWithInfo(new GameManager.SceneLoadInfo
             {
                 SceneName = "Dream_Final_Boss",
                 EntryGateName = "door1",
                 EntryDelay = 0f,
-                PreventCameraFadeOut = true,
             });
 
             yield return new WaitUntil(() => HeroController.instance.acceptingInput);
@@ -123,28 +122,6 @@ namespace SpeedRunQoL
             rb2d.isKinematic = !rb2d.isKinematic;
             Console.AddLine($"{(rb2d.isKinematic ? "Disabled" : "Enabled")} collision");
         }
-
-        [BindableMethod(name = "Toggle Dreamgate Invulnerability", category = "Glitches")]
-        public static void ToggleDgateInvuln()
-        {
-            var herobox = HeroController.instance.gameObject.transform.Find("HeroBox").gameObject;
-            var noRoar = HeroController.instance.gameObject.LocateMyFSM("Roar Lock").FsmVariables
-                .FindFsmBool("No Roar");
-            if (PlayerData.instance.isInvincible && !herobox.activeSelf && noRoar.Value)
-            {
-                PlayerData.instance.isInvincible = false;
-                herobox.SetActive(true);
-                noRoar.Value = false;
-                Console.AddLine("Taken away dreamgate invulnerability");
-            }
-            else
-            {
-                PlayerData.instance.isInvincible = true;
-                herobox.SetActive(false);
-                noRoar.Value = true;
-                Console.AddLine("Given dreamgate invulnerability");
-            }
-        }
         
         [BindableMethod(name = "Reset Quick Map Storage", category = "Glitches")]
         public static void ResetQMStorage()
@@ -216,39 +193,6 @@ namespace SpeedRunQoL
         {
             Console.AddLine($"Current State is {VisualStateViewer.CurrentViewingState.ToString()}");
         }
-        
-        [BindableMethod(name = "Toggle Godseeker Option", category = "Main Menu Settings")]
-        public static void ToggleGodseekerFileSelect()
-        {
-            // //Even with cleaner code I don't want to mess up cross platform stuff
-            // if (! RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-            // {
-            //     Console.AddLine("This feature is only available on Windows");
-            //     return;
-            // }
-
-            if (Platform.Current)
-            {
-                if (GameManager.instance.GetStatusRecordInt("RecBossRushMode") == 1)
-                {
-                    GameManager.instance.SetStatusRecordInt("RecBossRushMode", 0); ;
-                    Console.AddLine("Disabled Godseeker");
-                }
-
-                else
-                {
-                    GameManager.instance.SetStatusRecordInt("RecBossRushMode", 1);
-                    Console.AddLine("Added Godseeker");
-                }
-
-                GameManager.instance.SaveStatusRecords();
-            }
-
-            else
-            {
-                Console.AddLine("Error, platform out of date");
-            }
-        }
 
         [BindableMethod(name = "Toggle Steel Soul Option", category = "Main Menu Settings")]
         public static void ToggleSteelSoulSelect()
@@ -259,22 +203,19 @@ namespace SpeedRunQoL
             //     return;
             // }
 
-            if (Platform.Current)
+            if (GameManager.instance.GetStatusRecordInt("RecPermadeathMode") == 1)
             {
-                if (GameManager.instance.GetStatusRecordInt("RecPermadeathMode") == 1)
-                {
-                    GameManager.instance.SetStatusRecordInt("RecPermadeathMode", 0);
-                    Console.AddLine("Disabled Steel Soul");
-                }
-
-                else
-                {
-                    GameManager.instance.SetStatusRecordInt("RecPermadeathMode", 1);
-                    Console.AddLine("Enabled Steel Soul");
-                }
-
-                GameManager.instance.SaveStatusRecords();
+                GameManager.instance.SetStatusRecordInt("RecPermadeathMode", 0);
+                Console.AddLine("Disabled Steel Soul");
             }
+
+            else
+            {
+                GameManager.instance.SetStatusRecordInt("RecPermadeathMode", 1);
+                Console.AddLine("Enabled Steel Soul");
+            }
+
+            GameManager.instance.SaveStatusRecords();
         }
         //Colo 1
         [BindableMethod(name = "(0) Reset Bronze Waves", category = "Colosseum 1")]
